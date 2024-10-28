@@ -22,6 +22,7 @@ import (
 	"github.com/storacha/go-ucanto/principal"
 	"github.com/storacha/go-ucanto/ucan"
 	"github.com/storacha/indexing-service/pkg/construct"
+	idxsrv "github.com/storacha/indexing-service/pkg/server"
 	"github.com/storacha/storage/pkg/server"
 	"github.com/storacha/storage/pkg/service/storage"
 	"github.com/storacha/storage/pkg/store/blobstore"
@@ -31,11 +32,9 @@ import (
 
 func StartIPNIService(
 	t *testing.T,
-	accounceURL url.URL,
+	announceURL url.URL,
 	findURL url.URL,
 ) {
-	fmt.Println("starting IPNI service...")
-
 	indexerCore := engine.New(memory.New())
 
 	reg, err := registry.New(
@@ -60,14 +59,23 @@ func StartIPNIService(
 	)
 	require.NoError(t, err)
 
-	announceAddr := fmt.Sprintf("%s:%s", accounceURL.Hostname(), accounceURL.Port())
-	_, err = httpingest.New(announceAddr, indexerCore, ing, reg)
+	announceAddr := fmt.Sprintf("%s:%s", announceURL.Hostname(), announceURL.Port())
+	ingSvr, err := httpingest.New(announceAddr, indexerCore, ing, reg)
 	require.NoError(t, err)
 
-	findAddr := fmt.Sprintf("%s:%s", findURL.Hostname(), findURL.Port())
-	_, err = httpfind.New(findAddr, indexerCore, reg)
+	go func() {
+		err = ingSvr.Start()
+	}()
 
-	fmt.Printf("✔ IPNI service (%s) running at %s\n", p2pHost.ID(), findURL.String())
+	findAddr := fmt.Sprintf("%s:%s", findURL.Hostname(), findURL.Port())
+	findSvr, err := httpfind.New(findAddr, indexerCore, reg)
+
+	go func() {
+		err = findSvr.Start()
+	}()
+
+	time.Sleep(time.Millisecond * 100)
+	require.NoError(t, err)
 }
 
 func StartIndexingService(
@@ -77,12 +85,10 @@ func StartIndexingService(
 	indexerURL url.URL,
 	directAnnounceURL url.URL,
 ) {
-	fmt.Println("starting indexing service...")
-
 	privKey, err := crypto.UnmarshalEd25519PrivateKey(id.Raw())
 	require.NoError(t, err)
 
-	publisherListenURL := GenURL(t)
+	publisherListenURL := RandomLocalURL(t)
 	announceAddr, err := maurl.FromURL(&publisherListenURL)
 	require.NoError(t, err)
 
@@ -107,7 +113,13 @@ func StartIndexingService(
 	err = indexer.Startup(context.Background())
 	require.NoError(t, err)
 
-	fmt.Printf("✔ indexing service (%s) running at %s\n", id.DID(), publicURL.String())
+	go func() {
+		addr := fmt.Sprintf("%s:%s", publicURL.Hostname(), publicURL.Port())
+		err = idxsrv.ListenAndServe(addr, indexer, idxsrv.WithIdentity(id))
+	}()
+
+	time.Sleep(time.Millisecond * 100)
+	require.NoError(t, err)
 }
 
 func StartStorageNode(
@@ -119,8 +131,6 @@ func StartStorageNode(
 	indexingServiceURL url.URL,
 	indexingServiceProof delegation.Proof,
 ) {
-	fmt.Println("starting storage node...")
-
 	svc, err := storage.New(
 		storage.WithIdentity(id),
 		storage.WithBlobstore(blobstore.NewMapBlobstore()),
@@ -129,7 +139,7 @@ func StartStorageNode(
 		storage.WithPublisherDatastore(datastore.NewMapDatastore()),
 		storage.WithPublicURL(publicURL),
 		storage.WithPublisherDirectAnnounce(announceURL),
-		storage.WithPublisherIndexingServiceConfig(indexingServiceDID, indexingServiceURL),
+		storage.WithPublisherIndexingServiceConfig(indexingServiceDID, *indexingServiceURL.JoinPath("claims")),
 		storage.WithPublisherIndexingServiceProof(indexingServiceProof),
 	)
 	require.NoError(t, err)
@@ -139,7 +149,6 @@ func StartStorageNode(
 		err = server.ListenAndServe(addr, svc)
 	}()
 
-	time.Sleep(time.Second)
+	time.Sleep(time.Millisecond * 100)
 	require.NoError(t, err)
-	fmt.Printf("✔ storage node (%s) running at %s\n", id.DID(), publicURL.String())
 }
