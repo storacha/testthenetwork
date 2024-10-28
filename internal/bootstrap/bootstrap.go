@@ -1,4 +1,4 @@
-package testutil
+package bootstrap
 
 import (
 	"context"
@@ -27,6 +27,7 @@ import (
 	"github.com/storacha/storage/pkg/service/storage"
 	"github.com/storacha/storage/pkg/store/blobstore"
 	"github.com/storacha/testthenetwork/internal/redis"
+	"github.com/storacha/testthenetwork/internal/testutil"
 	"github.com/stretchr/testify/require"
 )
 
@@ -88,7 +89,7 @@ func StartIndexingService(
 	privKey, err := crypto.UnmarshalEd25519PrivateKey(id.Raw())
 	require.NoError(t, err)
 
-	publisherListenURL := RandomLocalURL(t)
+	publisherListenURL := testutil.RandomLocalURL(t)
 	announceAddr, err := maurl.FromURL(&publisherListenURL)
 	require.NoError(t, err)
 

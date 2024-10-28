@@ -14,6 +14,7 @@ import (
 	"github.com/storacha/go-capabilities/pkg/claim"
 	"github.com/storacha/go-ucanto/core/delegation"
 	"github.com/storacha/go-ucanto/ucan"
+	"github.com/storacha/testthenetwork/internal/bootstrap"
 	"github.com/storacha/testthenetwork/internal/digestutil"
 	"github.com/storacha/testthenetwork/internal/testutil"
 	"github.com/storacha/testthenetwork/internal/upload"
@@ -26,7 +27,7 @@ func TestUpload(t *testing.T) {
 	ipniAnnounceURL := testutil.RandomLocalURL(t)
 
 	fmt.Println("→ starting IPNI service")
-	testutil.StartIPNIService(t, ipniAnnounceURL, ipniFindURL)
+	bootstrap.StartIPNIService(t, ipniAnnounceURL, ipniFindURL)
 	fmt.Printf("✔ IPNI find and announce services running at %s and %s\n", ipniFindURL.String(), ipniAnnounceURL.String())
 
 	// Start Indexing Service ////////////////////////////////////////////////////
@@ -34,7 +35,7 @@ func TestUpload(t *testing.T) {
 	indexingURL := testutil.RandomLocalURL(t)
 
 	fmt.Println("→ starting indexing service")
-	testutil.StartIndexingService(t, indexingID, indexingURL, ipniFindURL, ipniAnnounceURL)
+	bootstrap.StartIndexingService(t, indexingID, indexingURL, ipniFindURL, ipniAnnounceURL)
 	fmt.Printf("✔ indexing service (%s) running at %s\n", indexingID.DID(), indexingURL.String())
 
 	// Start Storage Node ////////////////////////////////////////////////////////
@@ -57,7 +58,7 @@ func TestUpload(t *testing.T) {
 		)(t),
 	)
 	fmt.Println("→ starting storage node")
-	testutil.StartStorageNode(t, storageID, storageURL, ipniAnnounceURL, indexingID, indexingURL, storageIndexingProof)
+	bootstrap.StartStorageNode(t, storageID, storageURL, ipniAnnounceURL, indexingID, indexingURL, storageIndexingProof)
 	fmt.Printf("✔ storage node (%s) running at %s\n", storageID.DID(), storageURL.String())
 
 	// Start Upload Service //////////////////////////////////////////////////////
@@ -137,7 +138,7 @@ func TestUpload(t *testing.T) {
 	fmt.Println("→ decoding location commitment")
 	nb, rerr := assert.LocationCaveatsReader.Read(claim.Capabilities()[0].Nb())
 	require.NoError(t, rerr)
-	fmt.Printf("✔ decode success - assert/location @ %s\n", nb.Location[0].String())
+	fmt.Printf("✔ decode success - %s @ %s\n", claim.Capabilities()[0].Can(), nb.Location[0].String())
 
 	fmt.Println("→ fetching blob")
 	blobBytes := fetchBlob(t, nb.Location[0])
