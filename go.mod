@@ -6,6 +6,7 @@ require (
 	github.com/alanshaw/storetheindex v0.0.0-20241026220359-15f172e24dcc
 	github.com/ipfs/go-cid v0.4.1
 	github.com/ipfs/go-datastore v0.6.0
+	github.com/ipfs/go-log/v2 v2.5.1
 	github.com/ipld/go-ipld-prime v0.21.1-0.20240917223228-6148356a4c2e
 	github.com/ipni/go-indexer-core v0.8.20
 	github.com/ipni/go-libipni v0.6.14
@@ -101,7 +102,6 @@ require (
 	github.com/ipfs/go-ipld-format v0.6.0 // indirect
 	github.com/ipfs/go-ipld-legacy v0.2.1 // indirect
 	github.com/ipfs/go-log v1.0.5 // indirect
-	github.com/ipfs/go-log/v2 v2.5.1 // indirect
 	github.com/ipfs/go-merkledag v0.11.0 // indirect
 	github.com/ipfs/go-metrics-interface v0.0.1 // indirect
 	github.com/ipfs/go-unixfsnode v1.9.0 // indirect
