@@ -2,9 +2,6 @@ module github.com/storacha/testthenetwork
 
 go 1.23.2
 
-replace github.com/storacha/indexing-service => ../indexing-service
-replace github.com/storacha/storage => ../storage
-
 require (
 	github.com/alanshaw/storetheindex v0.0.0-20241026220359-15f172e24dcc
 	github.com/ipfs/go-cid v0.4.1
@@ -19,8 +16,8 @@ require (
 	github.com/redis/go-redis/v9 v9.6.1
 	github.com/storacha/go-capabilities v0.0.0-20241028080752-22b41240aa67
 	github.com/storacha/go-ucanto v0.1.1-0.20241028163940-34de8cd912bb
-	github.com/storacha/indexing-service v0.0.2-0.20241029135602-58528d993b75
-	github.com/storacha/storage v0.0.1-0.20241029110239-9b0d8eb4f6d0
+	github.com/storacha/indexing-service v0.0.2-0.20241029205304-9cbbc12f3269
+	github.com/storacha/storage v0.0.1-0.20241029210319-746c528fb2fc
 	github.com/stretchr/testify v1.9.0
 )
 
@@ -181,7 +178,7 @@ require (
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/storacha/go-metadata v0.0.0-20241021141939-f94d93dcda78 // indirect
-	github.com/storacha/ipni-publisher v0.0.0-20241029163008-3137e5b088fd // indirect
+	github.com/storacha/ipni-publisher v0.0.0-20241029210117-3286a26a47a8 // indirect
 	github.com/twmb/murmur3 v1.1.6 // indirect
 	github.com/ucan-wg/go-ucan v0.0.0-20240916120445-37f52863156c // indirect
 	github.com/whyrusleeping/cbor v0.0.0-20171005072247-63513f603b11 // indirect
