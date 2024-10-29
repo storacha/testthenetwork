@@ -13,6 +13,7 @@ import (
 	httpfind "github.com/alanshaw/storetheindex/server/find"
 	httpingest "github.com/alanshaw/storetheindex/server/ingest"
 	"github.com/ipfs/go-datastore"
+	dssync "github.com/ipfs/go-datastore/sync"
 	"github.com/ipni/go-indexer-core/engine"
 	"github.com/ipni/go-indexer-core/store/memory"
 	"github.com/ipni/go-libipni/maurl"
@@ -27,6 +28,7 @@ import (
 	"github.com/storacha/storage/pkg/service/storage"
 	"github.com/storacha/storage/pkg/store/blobstore"
 	"github.com/storacha/testthenetwork/internal/redis"
+	rsync "github.com/storacha/testthenetwork/internal/redis/sync"
 	"github.com/storacha/testthenetwork/internal/testutil"
 	"github.com/stretchr/testify/require"
 )
@@ -41,7 +43,7 @@ func StartIPNIService(
 	reg, err := registry.New(
 		context.Background(),
 		config.NewDiscovery(),
-		datastore.NewMapDatastore(),
+		dssync.MutexWrap(datastore.NewMapDatastore()),
 	)
 	require.NoError(t, err)
 
@@ -55,8 +57,8 @@ func StartIPNIService(
 		p2pHost,
 		indexerCore,
 		reg,
-		datastore.NewMapDatastore(),
-		datastore.NewMapDatastore(),
+		dssync.MutexWrap(datastore.NewMapDatastore()),
+		dssync.MutexWrap(datastore.NewMapDatastore()),
 	)
 	require.NoError(t, err)
 
@@ -104,10 +106,10 @@ func StartIndexingService(
 	indexer, err := construct.Construct(
 		cfg,
 		construct.WithStartIPNIServer(true),
-		construct.WithDatastore(datastore.NewMapDatastore()),
-		construct.WithProvidersClient(redis.NewMapRedis()),
-		construct.WithClaimsClient(redis.NewMapRedis()),
-		construct.WithIndexesClient(redis.NewMapRedis()),
+		construct.WithDatastore(dssync.MutexWrap(datastore.NewMapDatastore())),
+		construct.WithProvidersClient(rsync.MutexWrap(redis.NewMapRedis())),
+		construct.WithClaimsClient(rsync.MutexWrap(redis.NewMapRedis())),
+		construct.WithIndexesClient(rsync.MutexWrap(redis.NewMapRedis())),
 	)
 	require.NoError(t, err)
 
@@ -135,9 +137,9 @@ func StartStorageNode(
 	svc, err := storage.New(
 		storage.WithIdentity(id),
 		storage.WithBlobstore(blobstore.NewMapBlobstore()),
-		storage.WithAllocationDatastore(datastore.NewMapDatastore()),
-		storage.WithClaimDatastore(datastore.NewMapDatastore()),
-		storage.WithPublisherDatastore(datastore.NewMapDatastore()),
+		storage.WithAllocationDatastore(dssync.MutexWrap(datastore.NewMapDatastore())),
+		storage.WithClaimDatastore(dssync.MutexWrap(datastore.NewMapDatastore())),
+		storage.WithPublisherDatastore(dssync.MutexWrap(datastore.NewMapDatastore())),
 		storage.WithPublicURL(publicURL),
 		storage.WithPublisherDirectAnnounce(announceURL),
 		storage.WithPublisherIndexingServiceConfig(indexingServiceDID, *indexingServiceURL.JoinPath("claims")),
