@@ -32,19 +32,11 @@ type Config struct {
 	// StorageProof is a delegation allowing the upload service to invoke
 	// blob/allocate and blob/accept on the storage node.
 	StorageProof delegation.Proof
-	// IndexingServiceID is the DID of the indexing service.
-	IndexingServiceID ucan.Principal
-	// IndexingServiceURL is the URL of the indexing service UCAN endpoint.
-	IndexingServiceURL url.URL
-	// IndexingServiceProof is a delegation allowing the upload service to invoke
-	// assert/index and assert/equals on the indexing service.
-	IndexingServiceProof delegation.Proof
 }
 
 type UploadService struct {
-	cfg   Config
-	sconn client.Connection
-	iconn client.Connection
+	cfg  Config
+	conn client.Connection
 }
 
 // BlobAdd simulates a blob/add invocation from a client to the upload service.
@@ -68,7 +60,7 @@ func (s *UploadService) BlobAdd(t *testing.T, space did.DID, digest multihash.Mu
 	)
 	require.NoError(t, err)
 
-	res, err := client.Execute([]invocation.Invocation{inv}, s.sconn)
+	res, err := client.Execute([]invocation.Invocation{inv}, s.conn)
 	require.NoError(t, err)
 
 	reader, err := receipt.NewReceiptReaderFromTypes[bdm.AllocateOkModel, ipld.Node](bdm.AllocateOkType(), testutil.AnyType())
@@ -129,7 +121,7 @@ func (s *UploadService) ConcludeHTTPPut(t *testing.T, space did.DID, digest mult
 	)
 	require.NoError(t, err)
 
-	res, err := client.Execute([]invocation.Invocation{inv}, s.sconn)
+	res, err := client.Execute([]invocation.Invocation{inv}, s.conn)
 	require.NoError(t, err)
 
 	reader, err := receipt.NewReceiptReaderFromTypes[bdm.AcceptOkModel, ipld.Node](bdm.AcceptOkType(), testutil.AnyType())
@@ -156,13 +148,9 @@ func (s *UploadService) ConcludeHTTPPut(t *testing.T, space did.DID, digest mult
 }
 
 func NewService(t *testing.T, cfg Config) *UploadService {
-	schan := uhttp.NewHTTPChannel(&cfg.StorageNodeURL)
-	sconn, err := client.NewConnection(cfg.StorageNodeID, schan)
+	ch := uhttp.NewHTTPChannel(&cfg.StorageNodeURL)
+	conn, err := client.NewConnection(cfg.StorageNodeID, ch)
 	require.NoError(t, err)
 
-	ichan := uhttp.NewHTTPChannel(&cfg.IndexingServiceURL)
-	iconn, err := client.NewConnection(cfg.IndexingServiceID, ichan)
-	require.NoError(t, err)
-
-	return &UploadService{cfg, sconn, iconn}
+	return &UploadService{cfg, conn}
 }

@@ -2,6 +2,9 @@ module github.com/storacha/testthenetwork
 
 go 1.23.2
 
+replace github.com/storacha/indexing-service => ../indexing-service
+replace github.com/storacha/storage => ../storage
+
 require (
 	github.com/alanshaw/storetheindex v0.0.0-20241026220359-15f172e24dcc
 	github.com/ipfs/go-cid v0.4.1
@@ -11,12 +14,13 @@ require (
 	github.com/ipni/go-libipni v0.6.14
 	github.com/libp2p/go-libp2p v0.37.0
 	github.com/multiformats/go-multibase v0.2.0
+	github.com/multiformats/go-multicodec v0.9.0
 	github.com/multiformats/go-multihash v0.2.3
 	github.com/redis/go-redis/v9 v9.6.1
 	github.com/storacha/go-capabilities v0.0.0-20241028080752-22b41240aa67
-	github.com/storacha/go-ucanto v0.1.1-0.20241028122439-0d529756b469
-	github.com/storacha/indexing-service v0.0.2-0.20241028123904-10f31ac3db64
-	github.com/storacha/storage v0.0.0-20241028123116-253af2c9c6cc
+	github.com/storacha/go-ucanto v0.1.1-0.20241028163940-34de8cd912bb
+	github.com/storacha/indexing-service v0.0.2-0.20241029135602-58528d993b75
+	github.com/storacha/storage v0.0.1-0.20241029110239-9b0d8eb4f6d0
 	github.com/stretchr/testify v1.9.0
 )
 
@@ -138,7 +142,6 @@ require (
 	github.com/multiformats/go-multiaddr v0.13.0 // indirect
 	github.com/multiformats/go-multiaddr-dns v0.4.0 // indirect
 	github.com/multiformats/go-multiaddr-fmt v0.1.0 // indirect
-	github.com/multiformats/go-multicodec v0.9.0 // indirect
 	github.com/multiformats/go-multistream v0.5.0 // indirect
 	github.com/multiformats/go-varint v0.0.7 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
@@ -178,7 +181,7 @@ require (
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/storacha/go-metadata v0.0.0-20241021141939-f94d93dcda78 // indirect
-	github.com/storacha/ipni-publisher v0.0.0-20241018055706-032286a2dc3f // indirect
+	github.com/storacha/ipni-publisher v0.0.0-20241029163008-3137e5b088fd // indirect
 	github.com/twmb/murmur3 v1.1.6 // indirect
 	github.com/ucan-wg/go-ucan v0.0.0-20240916120445-37f52863156c // indirect
 	github.com/whyrusleeping/cbor v0.0.0-20171005072247-63513f603b11 // indirect

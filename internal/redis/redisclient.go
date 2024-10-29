@@ -39,7 +39,11 @@ func (m *MapRedis) Get(ctx context.Context, key string) *goredis.StringCmd {
 	if !ok {
 		cmd.SetErr(goredis.Nil)
 	} else {
-		cmd.SetVal(val.data)
+		if !val.expires.IsZero() && val.expires.Before(time.Now()) {
+			cmd.SetErr(goredis.Nil)
+		} else {
+			cmd.SetVal(val.data)
+		}
 	}
 	return cmd
 }
@@ -47,7 +51,7 @@ func (m *MapRedis) Get(ctx context.Context, key string) *goredis.StringCmd {
 func (m *MapRedis) Persist(ctx context.Context, key string) *goredis.BoolCmd {
 	cmd := goredis.NewBoolCmd(ctx, nil)
 	val, ok := m.data[key]
-	if ok && val.expires.IsZero() {
+	if ok && !val.expires.IsZero() {
 		val.expires = time.Time{}
 		cmd.SetVal(true)
 	}

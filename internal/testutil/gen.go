@@ -19,7 +19,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func RandomCAR(t *testing.T, size int) (multihash.Multihash, []byte) {
+// RandomCAR creates a CAR with a single block of random bytes of the specified
+// size. It returns the link of the root block, the hash of the CAR itself and
+// the bytes of the CAR.
+func RandomCAR(t *testing.T, size int) (ipld.Link, multihash.Multihash, []byte) {
 	digest, bytes := RandomBytes(t, size)
 	root := cidlink.Link{Cid: cid.NewCidV1(cid.Raw, digest)}
 	r := car.Encode([]ipld.Link{root}, func(yield func(block.Block, error) bool) {
@@ -29,7 +32,7 @@ func RandomCAR(t *testing.T, size int) (multihash.Multihash, []byte) {
 	require.NoError(t, err)
 	carDigest, err := multihash.Sum(carBytes, multihash.SHA2_256, -1)
 	require.NoError(t, err)
-	return carDigest, carBytes
+	return root, carDigest, carBytes
 }
 
 func RandomBytes(t *testing.T, size int) (multihash.Multihash, []byte) {
@@ -52,8 +55,7 @@ func RandomSigner(t *testing.T) principal.Signer {
 }
 
 func RandomLocalURL(t *testing.T) url.URL {
-	port, err := GetFreePort()
-	require.NoError(t, err)
+	port := GetFreePort(t)
 	pubURL, err := url.Parse(fmt.Sprintf("http://127.0.0.1:%d", port))
 	require.NoError(t, err)
 	return *pubURL
