@@ -105,7 +105,7 @@ func (s *UploadService) BlobAdd(t *testing.T, space did.DID, digest multihash.Mu
 // ConcludeHTTPPut simulates a ucan/conclude invocation for a http/put receipt
 // from the client. It sends a blob/accept invocation to the storage node and
 // returns the location commitment.
-func (s *UploadService) ConcludeHTTPPut(t *testing.T, space did.DID, digest multihash.Multihash, size uint64, expires uint64) delegation.Delegation {
+func (s *UploadService) ConcludeHTTPPut(t *testing.T, space did.DID, digest multihash.Multihash, size uint64) delegation.Delegation {
 	fmt.Println("→ performing ucan/conclude for http/put")
 	defer fmt.Println("✔ ucan/conclude success")
 
@@ -119,7 +119,6 @@ func (s *UploadService) ConcludeHTTPPut(t *testing.T, space did.DID, digest mult
 				Digest: digest,
 				Size:   size,
 			},
-			Expires: expires,
 			Put: blob.Promise{
 				UcanAwait: blob.Await{
 					Selector: ".out.ok",

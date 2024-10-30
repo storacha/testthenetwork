@@ -17,9 +17,9 @@ func TestTheNetwork(t *testing.T) {
 	logging.SetLogLevel("*", "warn")
 
 	t.Run("round trip", func(t *testing.T) {
-		storageID, indexingID, uploadID, aliceID := generateIdentities(t)
+		storageID, indexingID, uploadID, aliceID, bobID := generateIdentities(t)
 		ipniFindURL, ipniAnnounceURL, storageURL, indexingURL := generateURLs(t)
-		storageIndexingProof, uploadStorageProof, aliceIndexingProof := generateProofs(t, storageID, indexingID, uploadID, aliceID)
+		storageIndexingProof, uploadStorageProof, aliceIndexingProof, _ := generateProofs(t, storageID, indexingID, uploadID, aliceID, bobID)
 		uploadService, indexingClient := startServices(t, ipniFindURL, ipniAnnounceURL, storageID, storageURL, storageIndexingProof, indexingID, indexingURL, false, uploadID, uploadStorageProof)
 
 		space := testutil.RandomPrincipal(t).DID()
@@ -29,7 +29,7 @@ func TestTheNetwork(t *testing.T) {
 		if address != nil {
 			putBlob(t, address.URL, address.Headers, data)
 		}
-		claim := uploadService.ConcludeHTTPPut(t, space, digest, uint64(len(data)), address.Expires)
+		claim := uploadService.ConcludeHTTPPut(t, space, digest, uint64(len(data)))
 
 		nb := decodeLocationCommitmentCaveats(t, claim)
 
@@ -42,7 +42,7 @@ func TestTheNetwork(t *testing.T) {
 		if address != nil {
 			putBlob(t, address.URL, address.Headers, indexData)
 		}
-		uploadService.ConcludeHTTPPut(t, space, indexDigest, uint64(len(indexData)), address.Expires)
+		uploadService.ConcludeHTTPPut(t, space, indexDigest, uint64(len(indexData)))
 
 		publishIndexClaim(t, indexingClient, aliceID, aliceIndexingProof, root, indexLink)
 
@@ -60,9 +60,9 @@ func TestTheNetwork(t *testing.T) {
 	})
 
 	t.Run("round trip (no cache)", func(t *testing.T) {
-		storageID, indexingID, uploadID, aliceID := generateIdentities(t)
+		storageID, indexingID, uploadID, aliceID, bobID := generateIdentities(t)
 		ipniFindURL, ipniAnnounceURL, storageURL, indexingURL := generateURLs(t)
-		storageIndexingProof, uploadStorageProof, aliceIndexingProof := generateProofs(t, storageID, indexingID, uploadID, aliceID)
+		storageIndexingProof, uploadStorageProof, aliceIndexingProof, _ := generateProofs(t, storageID, indexingID, uploadID, aliceID, bobID)
 		uploadService, indexingClient := startServices(t, ipniFindURL, ipniAnnounceURL, storageID, storageURL, storageIndexingProof, indexingID, indexingURL, true, uploadID, uploadStorageProof)
 
 		space := testutil.RandomPrincipal(t).DID()
@@ -72,7 +72,7 @@ func TestTheNetwork(t *testing.T) {
 		if address != nil {
 			putBlob(t, address.URL, address.Headers, data)
 		}
-		claim := uploadService.ConcludeHTTPPut(t, space, digest, uint64(len(data)), address.Expires)
+		claim := uploadService.ConcludeHTTPPut(t, space, digest, uint64(len(data)))
 
 		nb := decodeLocationCommitmentCaveats(t, claim)
 
@@ -85,7 +85,7 @@ func TestTheNetwork(t *testing.T) {
 		if address != nil {
 			putBlob(t, address.URL, address.Headers, indexData)
 		}
-		uploadService.ConcludeHTTPPut(t, space, indexDigest, uint64(len(indexData)), address.Expires)
+		uploadService.ConcludeHTTPPut(t, space, indexDigest, uint64(len(indexData)))
 
 		publishIndexClaim(t, indexingClient, aliceID, aliceIndexingProof, root, indexLink)
 
@@ -109,5 +109,56 @@ func TestTheNetwork(t *testing.T) {
 		requireContainsIndexClaim(t, claims, root, indexLink)            // find an index claim for our root
 		requireContainsLocationCommitment(t, claims, indexDigest, space) // find a location commitment for the index
 		requireContainsLocationCommitment(t, claims, blobDigest, space)  // find a location commitment for the shard
+	})
+
+	t.Run("filter by space", func(t *testing.T) {
+		storageID, indexingID, uploadID, aliceID, bobID := generateIdentities(t)
+		ipniFindURL, ipniAnnounceURL, storageURL, indexingURL := generateURLs(t)
+		storageIndexingProof, uploadStorageProof, aliceIndexingProof, bobIndexingProof := generateProofs(t, storageID, indexingID, uploadID, aliceID, bobID)
+		uploadService, indexingClient := startServices(t, ipniFindURL, ipniAnnounceURL, storageID, storageURL, storageIndexingProof, indexingID, indexingURL, false, uploadID, uploadStorageProof)
+
+		aliceSpace := testutil.RandomPrincipal(t).DID()
+		root, rootDigest, digest, data := generateContent(t, 256)
+
+		address := uploadService.BlobAdd(t, aliceSpace, digest, uint64(len(data)))
+		if address != nil {
+			putBlob(t, address.URL, address.Headers, data)
+		}
+		uploadService.ConcludeHTTPPut(t, aliceSpace, digest, uint64(len(data)))
+
+		_, indexDigest, indexLink, indexData := generateIndex(t, root, data)
+
+		address = uploadService.BlobAdd(t, aliceSpace, indexDigest, uint64(len(indexData)))
+		if address != nil {
+			putBlob(t, address.URL, address.Headers, indexData)
+		}
+		uploadService.ConcludeHTTPPut(t, aliceSpace, indexDigest, uint64(len(indexData)))
+
+		publishIndexClaim(t, indexingClient, aliceID, aliceIndexingProof, root, indexLink)
+
+		// bob will attempt to upload the same blob
+		bobSpace := testutil.RandomPrincipal(t).DID()
+
+		address = uploadService.BlobAdd(t, bobSpace, digest, uint64(len(data)))
+		require.Nil(t, address) // address should be nil since it is already uploaded
+		uploadService.ConcludeHTTPPut(t, bobSpace, digest, uint64(len(data)))
+
+		address = uploadService.BlobAdd(t, bobSpace, indexDigest, uint64(len(indexData)))
+		require.Nil(t, address) // address should be nil since it is already uploaded
+		uploadService.ConcludeHTTPPut(t, bobSpace, indexDigest, uint64(len(indexData)))
+
+		publishIndexClaim(t, indexingClient, bobID, bobIndexingProof, root, indexLink)
+
+		result := queryClaims(t, indexingClient, rootDigest, bobSpace)
+		printer.PrintQueryResults(t, result)
+
+		indexes := collectIndexes(t, result)
+		require.Len(t, indexes, 1)
+		require.Equal(t, indexLink, result.Indexes()[0]) // should be the index we generated
+
+		claims := collectClaims(t, result)
+		requireContainsIndexClaim(t, claims, root, indexLink)                 // find an index claim for our root
+		requireContainsLocationCommitment(t, claims, indexDigest, aliceSpace) // find a location commitment for the index
+		requireContainsLocationCommitment(t, claims, digest, aliceSpace)      // find a location commitment for the shard
 	})
 }

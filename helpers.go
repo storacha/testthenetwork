@@ -41,15 +41,16 @@ func generateURLs(t *testing.T) (ipniFindURL, ipniAnnounceURL, storageURL, index
 	return
 }
 
-func generateIdentities(t *testing.T) (storageID, indexingID, uploadID, aliceID principal.Signer) {
+func generateIdentities(t *testing.T) (storageID, indexingID, uploadID, aliceID, bobID principal.Signer) {
 	storageID = testutil.RandomSigner(t)
 	indexingID = testutil.RandomSigner(t)
 	uploadID = testutil.RandomSigner(t)
 	aliceID = testutil.RandomSigner(t)
+	bobID = testutil.RandomSigner(t)
 	return
 }
 
-func generateProofs(t *testing.T, storageID, indexingID principal.Signer, uploadID, aliceID ucan.Principal) (storageIndexingProof, uploadStorageProof, aliceIndexingProof delegation.Proof) {
+func generateProofs(t *testing.T, storageID, indexingID principal.Signer, uploadID, aliceID, bobID ucan.Principal) (storageIndexingProof, uploadStorageProof, aliceIndexingProof, bobIndexingProof delegation.Proof) {
 	// proof storage node can invoke on indexing service
 	storageIndexingProof = delegation.FromDelegation(
 		testutil.Must(
@@ -95,6 +96,28 @@ func generateProofs(t *testing.T, storageID, indexingID principal.Signer, upload
 			delegation.Delegate(
 				indexingID,
 				aliceID,
+				[]ucan.Capability[ucan.NoCaveats]{
+					ucan.NewCapability(
+						assert.EqualsAbility,
+						indexingID.DID().String(),
+						ucan.NoCaveats{},
+					),
+					ucan.NewCapability(
+						assert.IndexAbility,
+						indexingID.DID().String(),
+						ucan.NoCaveats{},
+					),
+				},
+				delegation.WithNoExpiration(),
+			),
+		)(t),
+	)
+	// proof bob can invoke on indexing service
+	bobIndexingProof = delegation.FromDelegation(
+		testutil.Must(
+			delegation.Delegate(
+				indexingID,
+				bobID,
 				[]ucan.Capability[ucan.NoCaveats]{
 					ucan.NewCapability(
 						assert.EqualsAbility,
