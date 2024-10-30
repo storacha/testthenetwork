@@ -810,8 +810,8 @@ github.com/storacha/go-metadata v0.0.0-20241021141939-f94d93dcda78 h1:NAti9hMLMo
 github.com/storacha/go-metadata v0.0.0-20241021141939-f94d93dcda78/go.mod h1:DcwwQnyFuTk531cKD9sUkQg/gzpwKaIqH9I7oZYyeRc=
 github.com/storacha/go-ucanto v0.1.1-0.20241028163940-34de8cd912bb h1:lFwFtMjgt162ot9pnu230haLjRQ1rqwJOIAyywOqAX8=
 github.com/storacha/go-ucanto v0.1.1-0.20241028163940-34de8cd912bb/go.mod h1:7ba9jAgqmwlF/JfyFUQcGV07uiYNlmJNu8qH4hHtrJk=
-github.com/storacha/indexing-service v0.0.2-0.20241029205304-9cbbc12f3269 h1:fTeL0y5LrKTyBR5JEfbM3TsINIxjFxBf6vSq2g7vrUw=
-github.com/storacha/indexing-service v0.0.2-0.20241029205304-9cbbc12f3269/go.mod h1:HXMul+TKGkPL44K63zsk/EodegKiaFC5NXgafCNb+Ps=
+github.com/storacha/indexing-service v0.0.2-0.20241030071325-6725d07e355c h1:21tx8rWH5n6DMXb/dKZwjsXinoUTHmDV/pSGKE+c3Mg=
+github.com/storacha/indexing-service v0.0.2-0.20241030071325-6725d07e355c/go.mod h1:PzhVpNxtYwiPBZl6ph5nSNVTDtKZfGuHnvo1e0b39cw=
 github.com/storacha/ipni-publisher v0.0.0-20241029210117-3286a26a47a8 h1:QnLy9Y1x5NL1b8NFj71i+0bN+alPgjdcR0SMozXNeLU=
 github.com/storacha/ipni-publisher v0.0.0-20241029210117-3286a26a47a8/go.mod h1:fEuGSF5WMaOSAyDQCYAvow6Y+YKzpXczEk3A+H+s1fQ=
 github.com/storacha/storage v0.0.1-0.20241029210319-746c528fb2fc h1:yW7Y0sAHseq28o2o7HP4ioFKpzGLil7m+iLrGsD/Sw0=

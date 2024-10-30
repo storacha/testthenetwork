@@ -3,6 +3,7 @@ package bootstrap
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"net/url"
 	"testing"
 	"time"
@@ -37,7 +38,7 @@ func StartIPNIService(
 	t *testing.T,
 	announceURL url.URL,
 	findURL url.URL,
-) {
+) func() {
 	indexerCore := engine.New(memory.New())
 
 	reg, err := registry.New(
@@ -66,19 +67,31 @@ func StartIPNIService(
 	ingSvr, err := httpingest.New(announceAddr, indexerCore, ing, reg)
 	require.NoError(t, err)
 
+	var ingStartErr error
 	go func() {
-		err = ingSvr.Start()
+		ingStartErr = ingSvr.Start()
 	}()
 
 	findAddr := fmt.Sprintf("%s:%s", findURL.Hostname(), findURL.Port())
 	findSvr, err := httpfind.New(findAddr, indexerCore, reg)
 
+	var findStartErr error
 	go func() {
-		err = findSvr.Start()
+		findStartErr = findSvr.Start()
 	}()
 
 	time.Sleep(time.Millisecond * 100)
-	require.NoError(t, err)
+	require.NoError(t, ingStartErr)
+	require.NoError(t, findStartErr)
+
+	return func() {
+		ingSvr.Close()
+		ing.Close()
+		findSvr.Close()
+		reg.Close()
+		indexerCore.Close()
+		p2pHost.Close()
+	}
 }
 
 func StartIndexingService(
@@ -87,7 +100,8 @@ func StartIndexingService(
 	publicURL url.URL,
 	indexerURL url.URL,
 	directAnnounceURL url.URL,
-) {
+	noCache bool,
+) func() {
 	privKey, err := crypto.UnmarshalEd25519PrivateKey(id.Raw())
 	require.NoError(t, err)
 
@@ -103,14 +117,27 @@ func StartIndexingService(
 		PublisherListenAddr:         fmt.Sprintf("%s:%s", publisherListenURL.Hostname(), publisherListenURL.Port()),
 		PublisherAnnounceAddrs:      []string{announceAddr.String()},
 	}
-	indexer, err := construct.Construct(
-		cfg,
-		construct.WithStartIPNIServer(true),
-		construct.WithDatastore(dssync.MutexWrap(datastore.NewMapDatastore())),
-		construct.WithProvidersClient(rsync.MutexWrap(redis.NewMapRedis())),
-		construct.WithClaimsClient(rsync.MutexWrap(redis.NewMapRedis())),
-		construct.WithIndexesClient(rsync.MutexWrap(redis.NewMapRedis())),
-	)
+
+	var indexer construct.Service
+	if noCache {
+		indexer, err = construct.Construct(
+			cfg,
+			construct.WithStartIPNIServer(true),
+			construct.WithDatastore(dssync.MutexWrap(datastore.NewMapDatastore())),
+			construct.WithProvidersClient(redis.NewBlackholeRedis()),
+			construct.WithClaimsClient(redis.NewBlackholeRedis()),
+			construct.WithIndexesClient(redis.NewBlackholeRedis()),
+		)
+	} else {
+		indexer, err = construct.Construct(
+			cfg,
+			construct.WithStartIPNIServer(true),
+			construct.WithDatastore(dssync.MutexWrap(datastore.NewMapDatastore())),
+			construct.WithProvidersClient(rsync.MutexWrap(redis.NewMapRedis())),
+			construct.WithClaimsClient(rsync.MutexWrap(redis.NewMapRedis())),
+			construct.WithIndexesClient(rsync.MutexWrap(redis.NewMapRedis())),
+		)
+	}
 	require.NoError(t, err)
 
 	err = indexer.Startup(context.Background())
@@ -123,6 +150,10 @@ func StartIndexingService(
 
 	time.Sleep(time.Millisecond * 100)
 	require.NoError(t, err)
+
+	return func() {
+		indexer.Shutdown(context.Background())
+	}
 }
 
 func StartStorageNode(
@@ -133,7 +164,7 @@ func StartStorageNode(
 	indexingServiceDID ucan.Principal,
 	indexingServiceURL url.URL,
 	indexingServiceProof delegation.Proof,
-) {
+) func() {
 	svc, err := storage.New(
 		storage.WithIdentity(id),
 		storage.WithBlobstore(blobstore.NewMapBlobstore()),
@@ -147,11 +178,22 @@ func StartStorageNode(
 	)
 	require.NoError(t, err)
 
+	srvMux, err := server.NewServer(svc)
+	require.NoError(t, err)
+
+	httpServer := &http.Server{
+		Addr:    fmt.Sprintf("%s:%s", publicURL.Hostname(), publicURL.Port()),
+		Handler: srvMux,
+	}
+
 	go func() {
-		addr := fmt.Sprintf("%s:%s", publicURL.Hostname(), publicURL.Port())
-		err = server.ListenAndServe(addr, svc)
+		err = httpServer.ListenAndServe()
 	}()
 
 	time.Sleep(time.Millisecond * 100)
 	require.NoError(t, err)
+
+	return func() {
+		httpServer.Close()
+	}
 }

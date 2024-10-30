@@ -1,6 +1,7 @@
 package upload
 
 import (
+	"fmt"
 	"net/http"
 	"net/url"
 	"testing"
@@ -19,6 +20,7 @@ import (
 	"github.com/storacha/go-ucanto/principal"
 	uhttp "github.com/storacha/go-ucanto/transport/http"
 	"github.com/storacha/go-ucanto/ucan"
+	"github.com/storacha/testthenetwork/internal/digestutil"
 	"github.com/storacha/testthenetwork/internal/testutil"
 	"github.com/stretchr/testify/require"
 )
@@ -34,6 +36,8 @@ type Config struct {
 	StorageProof delegation.Proof
 }
 
+// UploadService simulates actions taken by the upload service in response to
+// client invocations.
 type UploadService struct {
 	cfg  Config
 	conn client.Connection
@@ -44,6 +48,9 @@ type UploadService struct {
 // upload address if required (i.e. it may be nil if the storage node already
 // has the blob).
 func (s *UploadService) BlobAdd(t *testing.T, space did.DID, digest multihash.Multihash, size uint64) *blob.Address {
+	fmt.Printf("→ performing blob/add with %s\n", digestutil.Format(digest))
+	defer fmt.Println("✔ blob/add success")
+
 	inv, err := blob.Allocate.Invoke(
 		s.cfg.ID,
 		s.cfg.StorageNodeID,
@@ -99,6 +106,9 @@ func (s *UploadService) BlobAdd(t *testing.T, space did.DID, digest multihash.Mu
 // from the client. It sends a blob/accept invocation to the storage node and
 // returns the location commitment.
 func (s *UploadService) ConcludeHTTPPut(t *testing.T, space did.DID, digest multihash.Multihash, size uint64, expires uint64) delegation.Delegation {
+	fmt.Println("→ performing ucan/conclude for http/put")
+	defer fmt.Println("✔ ucan/conclude success")
+
 	inv, err := blob.Accept.Invoke(
 		s.cfg.ID,
 		s.cfg.StorageNodeID,

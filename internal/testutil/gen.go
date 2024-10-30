@@ -20,9 +20,9 @@ import (
 )
 
 // RandomCAR creates a CAR with a single block of random bytes of the specified
-// size. It returns the link of the root block, the hash of the CAR itself and
-// the bytes of the CAR.
-func RandomCAR(t *testing.T, size int) (ipld.Link, multihash.Multihash, []byte) {
+// size. It returns the link of the root block, the hash of the root block, the
+// hash of the CAR itself and the bytes of the CAR.
+func RandomCAR(t *testing.T, size int) (ipld.Link, multihash.Multihash, multihash.Multihash, []byte) {
 	digest, bytes := RandomBytes(t, size)
 	root := cidlink.Link{Cid: cid.NewCidV1(cid.Raw, digest)}
 	r := car.Encode([]ipld.Link{root}, func(yield func(block.Block, error) bool) {
@@ -32,7 +32,7 @@ func RandomCAR(t *testing.T, size int) (ipld.Link, multihash.Multihash, []byte) 
 	require.NoError(t, err)
 	carDigest, err := multihash.Sum(carBytes, multihash.SHA2_256, -1)
 	require.NoError(t, err)
-	return root, carDigest, carBytes
+	return root, digest, carDigest, carBytes
 }
 
 func RandomBytes(t *testing.T, size int) (multihash.Multihash, []byte) {
@@ -54,8 +54,20 @@ func RandomSigner(t *testing.T) principal.Signer {
 	return id
 }
 
+var assignedPorts = map[int]struct{}{}
+
+// RandomLocalURL finds a free port and will not generate another URL with the
+// same port until test cleanup, even if no service is bound to it.
 func RandomLocalURL(t *testing.T) url.URL {
-	port := GetFreePort(t)
+	var port int
+	for {
+		port = GetFreePort(t)
+		if _, ok := assignedPorts[port]; !ok {
+			assignedPorts[port] = struct{}{}
+			t.Cleanup(func() { delete(assignedPorts, port) })
+			break
+		}
+	}
 	pubURL, err := url.Parse(fmt.Sprintf("http://127.0.0.1:%d", port))
 	require.NoError(t, err)
 	return *pubURL
