@@ -63,6 +63,7 @@ func generateProofs(t *testing.T, storageID, indexingID principal.Signer, upload
 						ucan.NoCaveats{},
 					),
 				},
+				delegation.WithNoExpiration(),
 			),
 		)(t),
 	)
@@ -84,6 +85,7 @@ func generateProofs(t *testing.T, storageID, indexingID principal.Signer, upload
 						ucan.NoCaveats{},
 					),
 				},
+				delegation.WithNoExpiration(),
 			),
 		)(t),
 	)
@@ -105,6 +107,7 @@ func generateProofs(t *testing.T, storageID, indexingID principal.Signer, upload
 						ucan.NoCaveats{},
 					),
 				},
+				delegation.WithNoExpiration(),
 			),
 		)(t),
 	)
@@ -124,7 +127,7 @@ func startServices(
 	uploadStorageProof delegation.Proof,
 ) (*upload.UploadService, *client.Client) {
 	fmt.Println("→ starting IPNI service")
-	closeIPNI := bootstrap.StartIPNIService(t, ipniAnnounceURL, ipniFindURL)
+	closeIPNI := bootstrap.StartIPNIService(t, ipniFindURL, ipniAnnounceURL)
 	t.Cleanup(closeIPNI)
 	fmt.Printf("✔ IPNI find and announce services running at %s and %s\n", ipniFindURL.String(), ipniAnnounceURL.String())
 

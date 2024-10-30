@@ -4,7 +4,6 @@ go 1.23.2
 
 require (
 	github.com/alanshaw/storetheindex v0.0.0-20241026220359-15f172e24dcc
-	github.com/ipfs/go-bitswap v0.11.0
 	github.com/ipfs/go-cid v0.4.1
 	github.com/ipfs/go-datastore v0.6.0
 	github.com/ipfs/go-log/v2 v2.5.1
@@ -21,7 +20,6 @@ require (
 	github.com/storacha/indexing-service v0.0.2-0.20241030071325-6725d07e355c
 	github.com/storacha/storage v0.0.1-0.20241029210319-746c528fb2fc
 	github.com/stretchr/testify v1.9.0
-	github.com/ucan-wg/go-ucan v0.0.0-20240916120445-37f52863156c
 )
 
 require (
@@ -59,7 +57,6 @@ require (
 	github.com/cockroachdb/tokenbucket v0.0.0-20230807174530-cc333fc44b06 // indirect
 	github.com/containerd/cgroups v1.1.0 // indirect
 	github.com/coreos/go-systemd/v22 v22.5.0 // indirect
-	github.com/cskr/pubsub v1.0.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/davidlazar/go-crypto v0.0.0-20200604182044-b73af7476f6c // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.3.0 // indirect
@@ -98,7 +95,6 @@ require (
 	github.com/ipfs/go-blockservice v0.5.2 // indirect
 	github.com/ipfs/go-ds-flatfs v0.5.1 // indirect
 	github.com/ipfs/go-ipfs-blockstore v1.3.1 // indirect
-	github.com/ipfs/go-ipfs-delay v0.0.1 // indirect
 	github.com/ipfs/go-ipfs-ds-help v1.1.1 // indirect
 	github.com/ipfs/go-ipfs-exchange-interface v0.2.1 // indirect
 	github.com/ipfs/go-ipfs-util v0.0.3 // indirect
@@ -184,6 +180,7 @@ require (
 	github.com/storacha/go-metadata v0.0.0-20241021141939-f94d93dcda78 // indirect
 	github.com/storacha/ipni-publisher v0.0.0-20241029210117-3286a26a47a8 // indirect
 	github.com/twmb/murmur3 v1.1.6 // indirect
+	github.com/ucan-wg/go-ucan v0.0.0-20240916120445-37f52863156c // indirect
 	github.com/whyrusleeping/cbor v0.0.0-20171005072247-63513f603b11 // indirect
 	github.com/whyrusleeping/cbor-gen v0.1.2 // indirect
 	github.com/wlynxg/anet v0.0.5 // indirect

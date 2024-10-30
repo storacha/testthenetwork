@@ -20,6 +20,7 @@ import (
 	"github.com/ipni/go-libipni/maurl"
 	"github.com/libp2p/go-libp2p"
 	"github.com/libp2p/go-libp2p/core/crypto"
+	"github.com/libp2p/go-libp2p/core/peer"
 	"github.com/storacha/go-ucanto/core/delegation"
 	"github.com/storacha/go-ucanto/principal"
 	"github.com/storacha/go-ucanto/ucan"
@@ -36,8 +37,8 @@ import (
 
 func StartIPNIService(
 	t *testing.T,
-	announceURL url.URL,
 	findURL url.URL,
+	announceURL url.URL,
 ) func() {
 	indexerCore := engine.New(memory.New())
 
@@ -104,6 +105,10 @@ func StartIndexingService(
 ) func() {
 	privKey, err := crypto.UnmarshalEd25519PrivateKey(id.Raw())
 	require.NoError(t, err)
+
+	peerID, err := peer.IDFromPrivateKey(privKey)
+	require.NoError(t, err)
+	fmt.Printf("Indexing service peer ID: %s\n", peerID.String())
 
 	publisherListenURL := testutil.RandomLocalURL(t)
 	announceAddr, err := maurl.FromURL(&publisherListenURL)
