@@ -2,8 +2,6 @@ module github.com/storacha/testthenetwork
 
 go 1.23.2
 
-replace github.com/storacha/indexing-service => ../indexing-service
-
 require (
 	github.com/alanshaw/storetheindex v0.0.0-20241026220359-15f172e24dcc
 	github.com/ipfs/go-cid v0.4.1
