@@ -74,6 +74,7 @@ func StartIPNIService(
 
 	findAddr := fmt.Sprintf("%s:%s", findURL.Hostname(), findURL.Port())
 	findSvr, err := httpfind.New(findAddr, indexerCore, reg)
+	require.NoError(t, err)
 
 	var findStartErr error
 	go func() {

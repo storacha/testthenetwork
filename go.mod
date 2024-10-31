@@ -17,7 +17,7 @@ require (
 	github.com/redis/go-redis/v9 v9.6.1
 	github.com/storacha/go-capabilities v0.0.0-20241030160329-4cf19ffc732d
 	github.com/storacha/go-ucanto v0.1.1-0.20241028163940-34de8cd912bb
-	github.com/storacha/indexing-service v0.0.2-0.20241031162811-0f01f3061919
+	github.com/storacha/indexing-service v0.0.2-0.20241031173003-7fdd3a2c0628
 	github.com/storacha/storage v0.0.1-0.20241030161957-49f15e727c69
 	github.com/stretchr/testify v1.9.0
 )
@@ -177,8 +177,8 @@ require (
 	github.com/raulk/go-watchdog v1.3.0 // indirect
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
-	github.com/storacha/go-metadata v0.0.0-20241021141939-f94d93dcda78 // indirect
-	github.com/storacha/ipni-publisher v0.0.0-20241030213210-27f9084f36d3 // indirect
+	github.com/storacha/go-metadata v0.0.0-20241031171938-8f3343b7ce5a // indirect
+	github.com/storacha/ipni-publisher v0.0.0-20241031171227-f59f9fc3b0b8 // indirect
 	github.com/twmb/murmur3 v1.1.6 // indirect
 	github.com/ucan-wg/go-ucan v0.0.0-20240916120445-37f52863156c // indirect
 	github.com/whyrusleeping/cbor v0.0.0-20171005072247-63513f603b11 // indirect
