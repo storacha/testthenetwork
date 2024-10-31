@@ -19,7 +19,7 @@ require (
 	github.com/redis/go-redis/v9 v9.6.1
 	github.com/storacha/go-capabilities v0.0.0-20241030160329-4cf19ffc732d
 	github.com/storacha/go-ucanto v0.1.1-0.20241028163940-34de8cd912bb
-	github.com/storacha/indexing-service v0.0.2-0.20241031070919-1c8cbe10dd56
+	github.com/storacha/indexing-service v0.0.2-0.20241031162811-0f01f3061919
 	github.com/storacha/storage v0.0.1-0.20241030161957-49f15e727c69
 	github.com/stretchr/testify v1.9.0
 )
