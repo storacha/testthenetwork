@@ -46,17 +46,17 @@ func TestTheNetwork(t *testing.T) {
 
 		publishIndexClaim(t, indexingClient, aliceID, aliceIndexingProof, root, indexLink)
 
-		result := queryClaims(t, indexingClient, rootDigest, did.Undef)
+		result := QueryClaims(t, indexingClient, rootDigest, did.Undef)
 		printer.PrintQueryResults(t, result)
 
-		indexes := collectIndexes(t, result)
+		indexes := CollectIndexes(t, result)
 		require.Len(t, indexes, 1)
 		require.Equal(t, indexLink, result.Indexes()[0]) // should be the index we generated
 
-		claims := collectClaims(t, result)
-		requireContainsIndexClaim(t, claims, root, indexLink)            // find an index claim for our root
-		requireContainsLocationCommitment(t, claims, indexDigest, space) // find a location commitment for the index
-		requireContainsLocationCommitment(t, claims, blobDigest, space)  // find a location commitment for the shard
+		claims := CollectClaims(t, result)
+		require.True(t, ContainsIndexClaim(t, claims, root, indexLink))            // find an index claim for our root
+		require.True(t, ContainsLocationCommitment(t, claims, indexDigest, space)) // find a location commitment for the index
+		require.True(t, ContainsLocationCommitment(t, claims, blobDigest, space))  // find a location commitment for the shard
 	})
 
 	t.Run("round trip (no cache)", func(t *testing.T) {
@@ -91,7 +91,7 @@ func TestTheNetwork(t *testing.T) {
 
 		var result types.QueryResult
 		for i := 0; i < 5; i++ {
-			result = queryClaims(t, indexingClient, rootDigest, did.Undef)
+			result = QueryClaims(t, indexingClient, rootDigest, did.Undef)
 			if len(result.Claims()) > 0 || len(result.Indexes()) > 0 {
 				break
 			}
@@ -101,14 +101,14 @@ func TestTheNetwork(t *testing.T) {
 		}
 		printer.PrintQueryResults(t, result)
 
-		indexes := collectIndexes(t, result)
+		indexes := CollectIndexes(t, result)
 		require.Len(t, indexes, 1)
 		require.Equal(t, indexLink, result.Indexes()[0]) // should be the index we generated
 
-		claims := collectClaims(t, result)
-		requireContainsIndexClaim(t, claims, root, indexLink)            // find an index claim for our root
-		requireContainsLocationCommitment(t, claims, indexDigest, space) // find a location commitment for the index
-		requireContainsLocationCommitment(t, claims, blobDigest, space)  // find a location commitment for the shard
+		claims := CollectClaims(t, result)
+		require.True(t, ContainsIndexClaim(t, claims, root, indexLink))            // find an index claim for our root
+		require.True(t, ContainsLocationCommitment(t, claims, indexDigest, space)) // find a location commitment for the index
+		require.True(t, ContainsLocationCommitment(t, claims, blobDigest, space))  // find a location commitment for the shard
 	})
 
 	t.Run("filter by space", func(t *testing.T) {
@@ -149,16 +149,18 @@ func TestTheNetwork(t *testing.T) {
 
 		publishIndexClaim(t, indexingClient, bobID, bobIndexingProof, root, indexLink)
 
-		result := queryClaims(t, indexingClient, rootDigest, bobSpace)
+		result := QueryClaims(t, indexingClient, rootDigest, bobSpace)
 		printer.PrintQueryResults(t, result)
 
-		indexes := collectIndexes(t, result)
+		indexes := CollectIndexes(t, result)
 		require.Len(t, indexes, 1)
 		require.Equal(t, indexLink, result.Indexes()[0]) // should be the index we generated
 
-		claims := collectClaims(t, result)
-		requireContainsIndexClaim(t, claims, root, indexLink)                 // find an index claim for our root
-		requireContainsLocationCommitment(t, claims, indexDigest, aliceSpace) // find a location commitment for the index
-		requireContainsLocationCommitment(t, claims, digest, aliceSpace)      // find a location commitment for the shard
+		claims := CollectClaims(t, result)
+		require.True(t, ContainsIndexClaim(t, claims, root, indexLink))               // find an index claim for our root
+		require.True(t, ContainsLocationCommitment(t, claims, indexDigest, bobSpace)) // find a location commitment for the index
+		require.True(t, ContainsLocationCommitment(t, claims, digest, bobSpace))      // find a location commitment for the shard
+		require.False(t, ContainsLocationCommitment(t, claims, indexDigest, aliceSpace))
+		require.False(t, ContainsLocationCommitment(t, claims, digest, aliceSpace))
 	})
 }

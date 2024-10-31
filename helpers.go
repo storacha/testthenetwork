@@ -234,7 +234,7 @@ func generateIndex(t *testing.T, content ipld.Link, carBytes []byte) (blobindex.
 	return index, digest, link, bytes
 }
 
-func collectIndexes(t *testing.T, result types.QueryResult) []blobindex.ShardedDagIndexView {
+func CollectIndexes(t *testing.T, result types.QueryResult) []blobindex.ShardedDagIndexView {
 	br, err := blockstore.NewBlockReader(blockstore.WithBlocksIterator(result.Blocks()))
 	require.NoError(t, err)
 
@@ -251,7 +251,7 @@ func collectIndexes(t *testing.T, result types.QueryResult) []blobindex.ShardedD
 	return indexes
 }
 
-func collectClaims(t *testing.T, result types.QueryResult) []delegation.Delegation {
+func CollectClaims(t *testing.T, result types.QueryResult) []delegation.Delegation {
 	br, err := blockstore.NewBlockReader(blockstore.WithBlocksIterator(result.Blocks()))
 	require.NoError(t, err)
 
@@ -264,8 +264,8 @@ func collectClaims(t *testing.T, result types.QueryResult) []delegation.Delegati
 	return claims
 }
 
-func requireContainsIndexClaim(t *testing.T, claims []delegation.Delegation, content ipld.Link, index ipld.Link) {
-	require.True(t, slices.ContainsFunc(claims, func(claim delegation.Delegation) bool {
+func ContainsIndexClaim(t *testing.T, claims []delegation.Delegation, content ipld.Link, index ipld.Link) bool {
+	return slices.ContainsFunc(claims, func(claim delegation.Delegation) bool {
 		cap := claim.Capabilities()[0]
 		if cap.Can() != assert.IndexAbility {
 			return false
@@ -273,11 +273,11 @@ func requireContainsIndexClaim(t *testing.T, claims []delegation.Delegation, con
 		nb, err := assert.IndexCaveatsReader.Read(cap.Nb())
 		require.NoError(t, err)
 		return nb.Content == content && nb.Index == index
-	}))
+	})
 }
 
-func requireContainsLocationCommitment(t *testing.T, claims []delegation.Delegation, content multihash.Multihash, space did.DID) {
-	require.True(t, slices.ContainsFunc(claims, func(claim delegation.Delegation) bool {
+func ContainsLocationCommitment(t *testing.T, claims []delegation.Delegation, content multihash.Multihash, space did.DID) bool {
+	return slices.ContainsFunc(claims, func(claim delegation.Delegation) bool {
 		cap := claim.Capabilities()[0]
 		if cap.Can() != assert.LocationAbility {
 			return false
@@ -285,7 +285,7 @@ func requireContainsLocationCommitment(t *testing.T, claims []delegation.Delegat
 		nb, err := assert.LocationCaveatsReader.Read(cap.Nb())
 		require.NoError(t, err)
 		return bytes.Equal(nb.Content.Hash(), content) && nb.Space == space
-	}))
+	})
 }
 
 func publishIndexClaim(t *testing.T, indexingClient *client.Client, issuer principal.Signer, proof delegation.Proof, content ipld.Link, index ipld.Link) {
@@ -298,8 +298,12 @@ func publishIndexClaim(t *testing.T, indexingClient *client.Client, issuer princ
 	fmt.Println("✔ assert/index success")
 }
 
-func queryClaims(t *testing.T, indexingClient *client.Client, digest multihash.Multihash, space did.DID) types.QueryResult {
-	fmt.Printf("→ performing query for %s\n", digestutil.Format(digest))
+func QueryClaims(t *testing.T, indexingClient *client.Client, digest multihash.Multihash, space did.DID) types.QueryResult {
+	if space == did.Undef {
+		fmt.Printf("→ performing query for %s\n", digestutil.Format(digest))
+	} else {
+		fmt.Printf("→ performing query for %s, filtered by space %s\n", digestutil.Format(digest), space.String())
+	}
 	var match types.Match
 	if space != did.Undef {
 		match.Subject = append(match.Subject, space)

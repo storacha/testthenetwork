@@ -20,12 +20,10 @@ import (
 	"github.com/ipni/go-libipni/maurl"
 	"github.com/libp2p/go-libp2p"
 	"github.com/libp2p/go-libp2p/core/crypto"
-	"github.com/libp2p/go-libp2p/core/peer"
 	"github.com/storacha/go-ucanto/core/delegation"
 	"github.com/storacha/go-ucanto/principal"
 	"github.com/storacha/go-ucanto/ucan"
 	"github.com/storacha/indexing-service/pkg/construct"
-	"github.com/storacha/indexing-service/pkg/metadata"
 	idxsrv "github.com/storacha/indexing-service/pkg/server"
 	"github.com/storacha/storage/pkg/server"
 	"github.com/storacha/storage/pkg/service/storage"
@@ -104,13 +102,8 @@ func StartIndexingService(
 	directAnnounceURL url.URL,
 	noCache bool,
 ) func() {
-	fmt.Println(metadata.LocationCommitmentID)
 	privKey, err := crypto.UnmarshalEd25519PrivateKey(id.Raw())
 	require.NoError(t, err)
-
-	peerID, err := peer.IDFromPrivateKey(privKey)
-	require.NoError(t, err)
-	fmt.Printf("Indexing service peer ID: %s\n", peerID.String())
 
 	publisherListenURL := testutil.RandomLocalURL(t)
 	announceAddr, err := maurl.FromURL(&publisherListenURL)
