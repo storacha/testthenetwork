@@ -15,10 +15,10 @@ require (
 	github.com/multiformats/go-multicodec v0.9.0
 	github.com/multiformats/go-multihash v0.2.3
 	github.com/redis/go-redis/v9 v9.6.1
-	github.com/storacha/go-capabilities v0.0.0-20241030160329-4cf19ffc732d
+	github.com/storacha/go-capabilities v0.0.0-20241108115011-2ffd682f2397
 	github.com/storacha/go-ucanto v0.1.1-0.20241028163940-34de8cd912bb
 	github.com/storacha/indexing-service v0.0.2-0.20241031173003-7fdd3a2c0628
-	github.com/storacha/storage v0.0.1-0.20241030161957-49f15e727c69
+	github.com/storacha/storage v0.0.1-0.20241108115411-9ce678fdcce3
 	github.com/stretchr/testify v1.9.0
 )
 
