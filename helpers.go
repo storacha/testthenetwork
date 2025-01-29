@@ -184,7 +184,9 @@ func startServices(
 func generateContent(t *testing.T, size int) (ipld.Link, multihash.Multihash, multihash.Multihash, []byte) {
 	fmt.Println("→ generating content")
 	root, rootDigest, digest, data := testutil.RandomCAR(t, size)
-	fmt.Printf("✔ generation success, root: %s\n", root.String())
+	fmt.Printf("✔ generation success\n")
+	fmt.Printf("  root: %s (%s)\n", root.String(), digestutil.Format(rootDigest))
+	fmt.Printf("  blob: %s\n", digestutil.Format(digest))
 	return root, rootDigest, digest, data
 }
 
@@ -196,7 +198,7 @@ func putBlob(t *testing.T, location url.URL, headers http.Header, data []byte) {
 
 	res, err := http.DefaultClient.Do(req)
 	require.NoError(t, err)
-	require.Equal(t, http.StatusCreated, res.StatusCode)
+	require.Equal(t, http.StatusOK, res.StatusCode)
 	fmt.Println("✔ index http/put success")
 }
 

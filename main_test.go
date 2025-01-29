@@ -28,6 +28,8 @@ func TestTheNetwork(t *testing.T) {
 		address := uploadService.BlobAdd(t, space, digest, uint64(len(data)))
 		if address != nil {
 			putBlob(t, address.URL, address.Headers, data)
+		} else {
+			require.Fail(t, "http/put address was nil")
 		}
 		claim := uploadService.ConcludeHTTPPut(t, space, digest, uint64(len(data)))
 
@@ -39,9 +41,8 @@ func TestTheNetwork(t *testing.T) {
 		_, indexDigest, indexLink, indexData := generateIndex(t, root, blobBytes)
 
 		address = uploadService.BlobAdd(t, space, indexDigest, uint64(len(indexData)))
-		if address != nil {
-			putBlob(t, address.URL, address.Headers, indexData)
-		}
+		require.NotNil(t, address)
+		putBlob(t, address.URL, address.Headers, indexData)
 		uploadService.ConcludeHTTPPut(t, space, indexDigest, uint64(len(indexData)))
 
 		publishIndexClaim(t, indexingClient, aliceID, aliceIndexingProof, root, indexLink)
@@ -69,9 +70,8 @@ func TestTheNetwork(t *testing.T) {
 		root, rootDigest, digest, data := generateContent(t, 256)
 
 		address := uploadService.BlobAdd(t, space, digest, uint64(len(data)))
-		if address != nil {
-			putBlob(t, address.URL, address.Headers, data)
-		}
+		require.NotNil(t, address)
+		putBlob(t, address.URL, address.Headers, data)
 		claim := uploadService.ConcludeHTTPPut(t, space, digest, uint64(len(data)))
 
 		nb := decodeLocationCommitmentCaveats(t, claim)
@@ -84,6 +84,8 @@ func TestTheNetwork(t *testing.T) {
 		address = uploadService.BlobAdd(t, space, indexDigest, uint64(len(indexData)))
 		if address != nil {
 			putBlob(t, address.URL, address.Headers, indexData)
+		} else {
+			require.Fail(t, "http/put address was nil")
 		}
 		uploadService.ConcludeHTTPPut(t, space, indexDigest, uint64(len(indexData)))
 
