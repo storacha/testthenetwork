@@ -9,14 +9,9 @@ import (
 	"github.com/storacha/indexing-service/pkg/redis"
 )
 
-type Client interface {
-	redis.Client
-	redis.SetsClient
-}
-
 type MutexRedis struct {
 	sync.RWMutex
-	child Client
+	child redis.Client
 }
 
 func (m *MutexRedis) Expire(ctx context.Context, key string, expiration time.Duration) *goredis.BoolCmd {
@@ -55,8 +50,8 @@ func (m *MutexRedis) SMembers(ctx context.Context, key string) *goredis.StringSl
 	return m.child.SMembers(ctx, key)
 }
 
-var _ Client = (*MutexRedis)(nil)
+var _ redis.Client = (*MutexRedis)(nil)
 
-func MutexWrap(c Client) *MutexRedis {
+func MutexWrap(c redis.Client) *MutexRedis {
 	return &MutexRedis{child: c}
 }

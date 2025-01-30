@@ -767,8 +767,8 @@ github.com/quic-go/webtransport-go v0.8.1-0.20241018022711-4ac2c9250e66 h1:4WFk6
 github.com/quic-go/webtransport-go v0.8.1-0.20241018022711-4ac2c9250e66/go.mod h1:Vp72IJajgeOL6ddqrAhmp7IM9zbTcgkQxD/YdxrVwMw=
 github.com/raulk/go-watchdog v1.3.0 h1:oUmdlHxdkXRJlwfG0O9omj8ukerm8MEQavSiDTEtBsk=
 github.com/raulk/go-watchdog v1.3.0/go.mod h1:fIvOnLbF0b0ZwkB9YU4mOW9Did//4vPZtDqv66NfsMU=
-github.com/redis/go-redis/v9 v9.6.1 h1:HHDteefn6ZkTtY5fGUE8tj8uy85AHk6zP7CpzIAM0y4=
-github.com/redis/go-redis/v9 v9.6.1/go.mod h1:0C0c6ycQsdpVNQpxb1njEQIqkx5UcsM8FJCQLgE9+RA=
+github.com/redis/go-redis/v9 v9.7.0 h1:HhLSs+B6O021gwzl+locl0zEDnyNkxMtf/Z3NNBMa9E=
+github.com/redis/go-redis/v9 v9.7.0/go.mod h1:f6zhXITC7JUJIlPEiBOTXxJgPLdZcA93GewI7inzyWw=
 github.com/rogpeppe/fastuuid v1.2.0/go.mod h1:jVj6XXZzXRy/MSR5jhDC/2q6DgLz+nrA6LYCDYWNEvQ=
 github.com/rogpeppe/go-internal v1.3.0/go.mod h1:M8bDsm7K2OlrFYOpmOWEs/qY81heoFRclV5y23lUDJ4=
 github.com/rogpeppe/go-internal v1.9.0/go.mod h1:WtVeX8xhTBvf0smdhujwtBcq4Qrzq/fJaraNFVN+nFs=
@@ -836,8 +836,8 @@ github.com/storacha/go-piece v0.0.0-20241110131739-7631aadb97ea h1:/CaHFss3pJrWk
 github.com/storacha/go-piece v0.0.0-20241110131739-7631aadb97ea/go.mod h1:lV3s4aCpSZn9srVjfDTsIAqx3MbO8Y/7JH2M/esSZcM=
 github.com/storacha/go-ucanto v0.2.1-0.20241112085137-475288638966 h1:n5GW+F8AiwdZPvsPY7SIsBAfKp9cDJLoAHWMjFQOTCE=
 github.com/storacha/go-ucanto v0.2.1-0.20241112085137-475288638966/go.mod h1:kslS8xldf12d2D4kj0wBfOvAP1gftzMjTxBdJwGKwZE=
-github.com/storacha/indexing-service v1.1.2-0.20250129163237-e19ef3cf0723 h1:YXnpvD+J1rAkNzVuIP1NQWKOUqvILcg2jy2/Hi5CnIo=
-github.com/storacha/indexing-service v1.1.2-0.20250129163237-e19ef3cf0723/go.mod h1:6OJKDAsmk2mT3vYGITVTIGdF1EH45cBXbcTFdUFyo7I=
+github.com/storacha/indexing-service v1.1.2-0.20250130145607-c66c4e04ea2e h1:/qcT41EWXqSHs2R29H76hZ0jfJh1JJL92ZLcL9D0ny8=
+github.com/storacha/indexing-service v1.1.2-0.20250130145607-c66c4e04ea2e/go.mod h1:R4A3ldiQnrJ/vW27k0gTCWD8Y6pb5U3dg2B07P/0GgY=
 github.com/storacha/ipni-publisher v0.0.0-20241112152400-07a540928427 h1:RoP1oLKNH4OXA37h4XgZIPSgFyyRuP3vM4DLbzjc2hk=
 github.com/storacha/ipni-publisher v0.0.0-20241112152400-07a540928427/go.mod h1:RSXcupgcsMXuFCrk+fqJHTfJKUNygt7bPFe5yJ+V9tE=
 github.com/storacha/storage v0.0.1-0.20250128123235-911d798314fa h1:M1C77JLBSHUaxkeWCLHT0Ff54UhM7VXhbUWhLuvAoiU=
