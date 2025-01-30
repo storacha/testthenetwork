@@ -2,14 +2,13 @@ package upload
 
 import (
 	"fmt"
-	"net/http"
 	"net/url"
 	"testing"
 
 	"github.com/ipld/go-ipld-prime"
 	"github.com/multiformats/go-multihash"
 	"github.com/storacha/go-capabilities/pkg/blob"
-	bdm "github.com/storacha/go-capabilities/pkg/blob/datamodel"
+	"github.com/storacha/go-capabilities/pkg/types"
 	"github.com/storacha/go-ucanto/client"
 	"github.com/storacha/go-ucanto/core/dag/blockstore"
 	"github.com/storacha/go-ucanto/core/delegation"
@@ -70,7 +69,7 @@ func (s *UploadService) BlobAdd(t *testing.T, space did.DID, digest multihash.Mu
 	res, err := client.Execute([]invocation.Invocation{inv}, s.conn)
 	require.NoError(t, err)
 
-	reader, err := receipt.NewReceiptReaderFromTypes[bdm.AllocateOkModel, ipld.Node](bdm.AllocateOkType(), testutil.AnyType())
+	reader, err := receipt.NewReceiptReaderFromTypes[blob.AllocateOk, ipld.Node](blob.AllocateOkType(), testutil.AnyType(), types.Converters...)
 	require.NoError(t, err)
 
 	rcptLink, ok := res.Get(inv.Link())
@@ -87,19 +86,7 @@ func (s *UploadService) BlobAdd(t *testing.T, space did.DID, digest multihash.Mu
 		return nil
 	}
 
-	url, err := url.Parse(alloc.Address.Url)
-	require.NoError(t, err)
-
-	headers := http.Header{}
-	for k, v := range alloc.Address.Headers.Values {
-		headers.Set(k, v)
-	}
-
-	return &blob.Address{
-		URL:     *url,
-		Headers: headers,
-		Expires: uint64(alloc.Address.Expires),
-	}
+	return alloc.Address
 }
 
 // ConcludeHTTPPut simulates a ucan/conclude invocation for a http/put receipt
@@ -133,7 +120,7 @@ func (s *UploadService) ConcludeHTTPPut(t *testing.T, space did.DID, digest mult
 	res, err := client.Execute([]invocation.Invocation{inv}, s.conn)
 	require.NoError(t, err)
 
-	reader, err := receipt.NewReceiptReaderFromTypes[bdm.AcceptOkModel, ipld.Node](bdm.AcceptOkType(), testutil.AnyType())
+	reader, err := receipt.NewReceiptReaderFromTypes[blob.AcceptOk, ipld.Node](blob.AcceptOkType(), testutil.AnyType())
 	require.NoError(t, err)
 
 	rcptLink, ok := res.Get(inv.Link())

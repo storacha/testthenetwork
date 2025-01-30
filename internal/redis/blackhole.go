@@ -34,3 +34,15 @@ func (m *BlackholeRedis) Persist(ctx context.Context, key string) *goredis.BoolC
 func (m *BlackholeRedis) Set(ctx context.Context, key string, value interface{}, expiration time.Duration) *goredis.StatusCmd {
 	return goredis.NewStatusCmd(ctx, nil)
 }
+
+func (m *BlackholeRedis) SAdd(ctx context.Context, key string, values ...interface{}) *goredis.IntCmd {
+	cmd := goredis.NewIntCmd(ctx, nil)
+	cmd.SetVal(int64(len(values)))
+	return cmd
+}
+
+func (m *BlackholeRedis) SMembers(ctx context.Context, key string) *goredis.StringSliceCmd {
+	cmd := goredis.NewStringSliceCmd(ctx, nil)
+	cmd.SetErr(goredis.Nil)
+	return cmd
+}
